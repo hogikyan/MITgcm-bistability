@@ -277,7 +277,7 @@ for i=1:30 % Atlantic
 end
 
 % Add diagnosed flux from surface salinity relaxation
-addpath /project2/mfj/Jenny/MITgcm-checkpoint67m_2019_10_16/utils/matlab
+addpath /project2/mfj/hogikyan/MITgcm_01_20_2026/utils/matlab
 S0=34.8;
 diag=rdmds('InputsurfDiag',0047085000);
 sflux=diag(:,:,3)/S0/10^3; % to convert to the same unit as emp

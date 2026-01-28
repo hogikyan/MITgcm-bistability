@@ -10,7 +10,7 @@ C     sizRegMsk  :: maximum size of the regional-mask (statistics-diagnostics)
 C     nStats     :: maximum number of statistics (e.g.: aver,min,max ...)
 C     diagSt_size:: maximum size of the storage array for statistics-diagnostics
 C Note : may need to increase "numDiags" when using several 2D/3D diagnostics,
-C  and "diagSt_size" (statistics-diags) since values here are deliberately small. !cyc: 30*Nr
+C  and "diagSt_size" (statistics-diags) since values here are deliberately small.
       INTEGER    ndiagMax
       INTEGER    numlists, numperlist, numLevels
       INTEGER    numDiags
@@ -21,8 +21,8 @@ C  and "diagSt_size" (statistics-diags) since values here are deliberately small
       PARAMETER( numDiags = 30*Nr )
       PARAMETER( nRegions = 0 , sizRegMsk = 1 , nStats = 4 )
       PARAMETER( diagSt_size = 30*Nr )
-
-
+C  ! cyc: 30*Nr numdiags, diagst_size
+      
 CEH3 ;;; Local Variables: ***
 CEH3 ;;; mode:fortran ***
 CEH3 ;;; End: ***

@@ -1,3 +1,8 @@
+#ifndef EXF_OPTIONS_H
+#define EXF_OPTIONS_H
+#include "PACKAGES_CONFIG.h"
+#include "CPP_OPTIONS.h"
+
 CBOP
 C !ROUTINE: EXF_OPTIONS.h
 C !INTERFACE:
@@ -9,12 +14,7 @@ C | CPP options file for EXternal Forcing (EXF) package:
 C | Control which optional features to compile in this package code.
 C *==================================================================*
 CEOP
-
-#ifndef EXF_OPTIONS_H
-#define EXF_OPTIONS_H
-#include "PACKAGES_CONFIG.h"
-#include "CPP_OPTIONS.h"
-
+  
 #ifdef ALLOW_EXF
 #ifdef ECCO_CPPOPTIONS_H
 
@@ -98,12 +98,12 @@ C   >>> EXF_SEAICE_FRACTION <<<
 C       If defined, seaice fraction can be read-in from files (areaMaskFile)
 C
 C   >>> ALLOW_CLIMSST_RELAXATION <<<
-C       Allow the relaxation to a monthly climatology of sea surface
-C       temperature, e.g. the Reynolds climatology.
+C       Allow the relaxation of surface level temperature to SST (climatology),
+C       e.g. the Reynolds climatology.
 C
 C   >>> ALLOW_CLIMSSS_RELAXATION <<<
-C       Allow the relaxation to a monthly climatology of sea surface
-C       salinity, e.g. the Levitus climatology.
+C       Allow the relaxation of surface level salinity to SSS (climatology),
+C       e.g. the Levitus climatology.
 C
 C   >>> USE_EXF_INTERPOLATION <<<
 C       Allows to provide input field on arbitrary Lat-Lon input grid
@@ -171,9 +171,12 @@ C-  Bulk formulae related flags.
 #define ALLOW_DOWNWARD_RADIATION
 #ifdef ALLOW_ATM_TEMP
 C Note: To use ALLOW_BULKFORMULAE or EXF_READ_EVAP, needs #define ALLOW_ATM_TEMP
-C !cyc: turn on EXF_READ_EVAP
 # define ALLOW_BULKFORMULAE
+C use Large and Yeager (2004) modification to Large and Pond bulk formulae
 # undef  ALLOW_BULK_LARGEYEAGER04
+C use drag formulation of Large and Yeager (2009), Climate Dyn., 33, pp 341-364
+# undef  ALLOW_DRAG_LARGEYEAGER09
+C cyc: turn on EXF_READ_EVAP
 # define  EXF_READ_EVAP
 # ifndef ALLOW_BULKFORMULAE
 C  Note: To use ALLOW_READ_TURBFLUXES, ALLOW_ATM_TEMP needs to
@@ -205,7 +208,7 @@ C   unless to reproduce old results (obtained with inconsistent old code)
 # define EXF_LWDOWN_WITH_EMISSIVITY
 #endif
 
-C-  Relaxation to monthly climatologies. !cyc: turn off
+C-  Surface level relaxation to prescribed fields (e.g., climatologies) !cyc: turn off
 #undef ALLOW_CLIMSST_RELAXATION
 #undef ALLOW_CLIMSSS_RELAXATION
 
@@ -228,9 +231,13 @@ C   (no pole symmetry, single vector-comp interp, reset to 0 zonal-comp @ N.pole
 #define EXF_INTERP_USE_DYNALLOC
 C !cyc: remove condition on USE_EXF_INTERPOLATION
 C #if ( defined USE_EXF_INTERPOLATION && defined EXF_INTERP_USE_DYNALLOC && defined USING_THREADS )
-#if ( defined EXF_INTERP_USE_DYNALLOC && defined USING_THREADS )
+#if ( defined EXF_INTERP_USE_DYNALLOC && defined USING_THREADS )			  
 # define EXF_IREAD_USE_GLOBAL_POINTER
 #endif
+
+C-  Not recommended (not tested nor maintained) and un-documented Options:
+#undef ALLOW_BULK_OFFLINE
+#undef ALLOW_CLIMSTRESS_RELAXATION
 
 #endif /* ndef ECCO_CPPOPTIONS_H */
 #endif /* ALLOW_EXF */

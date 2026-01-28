@@ -1,0 +1,1 @@
+../code/seaice_readparms.F

@@ -65,25 +65,27 @@ C     == end of interface ==
 
 C     Surface flux data.
       NAMELIST /EXF_NML_01/
-     &      windstressmax,       repeatPeriod,    exf_albedo,
-     &   ocean_emissivity,     ice_emissivity, snow_emissivity,
-     &          exf_iceCd,          exf_iceCe,     exf_iceCh,
-     &   exf_scal_BulkCdn,     climtempfreeze, useExfCheckRange,
-     &      exf_iprec    ,   exf_iprec_obcs  , exf_yftype,
-     &      exf_verbose  ,   exf_debugLev    , exf_monFreq,
+     & windstressmax,       repeatPeriod,    exf_albedo,
+     & ocean_emissivity,     ice_emissivity, snow_emissivity,
+     & exf_iceCd,          exf_iceCe,     exf_iceCh,
+     & exf_scal_BulkCdn,     climtempfreeze, useExfCheckRange,
+     & exf_iprec    ,   exf_iprec_obcs  , exf_yftype,
+     & exf_verbose  ,   exf_debugLev    , exf_monFreq,
+     & exf_adjMonFreq, exf_adjMonSelect,
      & useExfYearlyFields,  twoDigitYear,
      & readStressOnAgrid, rotateStressOnAgrid, readStressOnCgrid,
      & useAtmWind,          useRelativeWind  , noNegativeEvap,
      & useStabilityFct_overIce, diags_opOceWeighted,
      & select_ZenAlbedo, useExfZenIncoming,
      & hu, ht, umin, atmrho, atmcp, cen2kel, gravity_mks,
-     & cdrag_1, cdrag_2, cdrag_3, cstanton_1, cstanton_2, cdalton,
+     & cdrag_1, cdrag_2, cdrag_3, cdrag_8, cdragMax, umax,
+     & cstanton_1, cstanton_2, cdalton,
      & flamb, flami, zolmin, zref,
      & cvapor_fac, cvapor_exp, cvapor_fac_ice, cvapor_exp_ice,
      & humid_fac, gamma_blk, saltsat, sstExtrapol, psim_fac,
-C      !cyc: define useSensFluxRestore flag and
-C      TauSensFluxRestore (restoring strength in J/m^2/s)
-     & useSensFluxRestore, TauSensFluxRestore
+C   !cyc : define useSenseFluxRestore flag and
+C   !TauSenseFluxRestore (restoring strength in J/m^2/s)
+     & useSensFluxRestore, TauSensFluxRestore 
 
       NAMELIST /EXF_NML_02/
      &          hfluxfile,     hfluxstartdate1,     hfluxstartdate2,
@@ -303,6 +305,8 @@ c     exf_verbose        = debugMode
       exf_verbose        = .FALSE.
       exf_debugLev       = debugLevel
       exf_monFreq        = monitorFreq
+      exf_adjMonFreq     = adjMonitorFreq
+      exf_adjMonSelect   = 1
       useExfCheckRange   = .TRUE.
       select_ZenAlbedo   = 0
       useExfZenIncoming  = .FALSE.
@@ -342,6 +346,15 @@ c     humid_fac   =  atm_Rq     <- default is zero !!!
       cdrag_1        =        0.0027000 _d 0
       cdrag_2        =        0.0001420 _d 0
       cdrag_3        =        0.0000764 _d 0
+#ifdef  ALLOW_DRAG_LARGEYEAGER09
+      cdrag_8        =       -3.1480700 _d -13
+      cdragMax       =        2.34      _d -03
+      umax           =       33.        _d 0
+#else
+      cdrag_8        = UNSET_RL
+      cdragMax       = UNSET_RL
+      umax           = UNSET_RL
+#endif
       cstanton_1     =        0.0327 _d 0
       cstanton_2     =        0.0180 _d 0
       cdalton        =        0.0346 _d 0
@@ -351,6 +364,10 @@ c     humid_fac   =  atm_Rq     <- default is zero !!!
       hu             =       10.000  _d 0
       ht             =        2.000  _d 0
       umin           =        0.5    _d 0
+C     !cyc: define useSensFluxRestore flag and
+C     TauSensFluxRestore (restoring strength in J/m^2/s)
+      useSensFluxRestore = .FALSE.
+      TauSensFluxRestore = 0.0 _d 0
       exf_iceCd        = 1.63 _d -3
       exf_iceCe        = 1.63 _d -3
       exf_iceCh        = 1.63 _d -3
@@ -360,10 +377,6 @@ C--   an earlier setting of 5.5 = ocean_emissivity*stefanBoltzmann
       ocean_emissivity = 5.50 _d -8 / 5.670 _d -8
       ice_emissivity   = 0.95 _d 0
       snow_emissivity  = 0.95 _d 0
-C     !cyc: define useSensFluxRestore flag and
-C     TauSensFluxRestore (restoring strength in J/m^2/s)
-      useSensFluxRestore = .FALSE.
-      TauSensFluxRestore = 0.0 _d 0
 
 C     Calendar data.
       hfluxstartdate1    = 0
@@ -513,7 +526,7 @@ C     Calendar data.
       apressurestartdate1    = 0
       apressurestartdate2    = 0
       apressureperiod        = 0.0 _d 0
-      apressureconst         = 0.0 _d 0
+      apressureconst         = surf_pRef
       apressure_exfremo_intercept = 0.0 _d 0
       apressure_exfremo_slope = 0.0 _d 0
 
